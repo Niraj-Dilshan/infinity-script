@@ -3,7 +3,7 @@ set -e
 
 INSTALL_DIR="/opt"
 if [ -z "$APP_NAME" ]; then
-    APP_NAME="marzban"
+    APP_NAME="infinity"
 fi
 APP_DIR="$INSTALL_DIR/$APP_NAME"
 DATA_DIR="/var/lib/$APP_NAME"
@@ -117,17 +117,17 @@ install_docker() {
     colorized_echo green "Docker installed successfully"
 }
 
-install_marzban_script() {
-    FETCH_REPO="Gozargah/Marzban-scripts"
-    SCRIPT_URL="https://github.com/$FETCH_REPO/raw/master/marzban.sh"
-    colorized_echo blue "Installing marzban script"
-    curl -sSL $SCRIPT_URL | install -m 755 /dev/stdin /usr/local/bin/marzban
-    colorized_echo green "marzban script installed successfully"
+install_infinity_script() {
+    FETCH_REPO="Niraj-Dilshan/infinity-script"
+    SCRIPT_URL="https://github.com/$FETCH_REPO/raw/master/infinity.sh"
+    colorized_echo blue "Installing infinity script"
+    curl -sSL $SCRIPT_URL | install -m 755 /dev/stdin /usr/local/bin/infinity
+    colorized_echo green "infinity script installed successfully"
 }
 
-install_marzban() {
+install_infinity() {
     # Fetch releases
-    FILES_URL_PREFIX="https://raw.githubusercontent.com/Gozargah/Marzban/master"
+    FILES_URL_PREFIX="https://raw.githubusercontent.com/Niraj-Dilshan/infinity/master"
     
     mkdir -p "$DATA_DIR"
     mkdir -p "$APP_DIR"
@@ -140,37 +140,37 @@ install_marzban() {
     curl -sL "$FILES_URL_PREFIX/.env.example" -o "$APP_DIR/.env"
     sed -i 's/^# \(XRAY_JSON = .*\)$/\1/' "$APP_DIR/.env"
     sed -i 's/^# \(SQLALCHEMY_DATABASE_URL = .*\)$/\1/' "$APP_DIR/.env"
-    sed -i 's~\(XRAY_JSON = \).*~\1"/var/lib/marzban/xray_config.json"~' "$APP_DIR/.env"
-    sed -i 's~\(SQLALCHEMY_DATABASE_URL = \).*~\1"sqlite:////var/lib/marzban/db.sqlite3"~' "$APP_DIR/.env"
+    sed -i 's~\(XRAY_JSON = \).*~\1"/var/lib/infinity/xray_config.json"~' "$APP_DIR/.env"
+    sed -i 's~\(SQLALCHEMY_DATABASE_URL = \).*~\1"sqlite:////var/lib/infinity/db.sqlite3"~' "$APP_DIR/.env"
     colorized_echo green "File saved in $APP_DIR/.env"
     
     colorized_echo blue "Fetching xray config file"
     curl -sL "$FILES_URL_PREFIX/xray_config.json" -o "$DATA_DIR/xray_config.json"
     colorized_echo green "File saved in $DATA_DIR/xray_config.json"
     
-    colorized_echo green "Marzban's files downloaded successfully"
+    colorized_echo green "infinity's files downloaded successfully"
 }
 
 
-uninstall_marzban_script() {
-    if [ -f "/usr/local/bin/marzban" ]; then
-        colorized_echo yellow "Removing marzban script"
-        rm "/usr/local/bin/marzban"
+uninstall_infinity_script() {
+    if [ -f "/usr/local/bin/infinity" ]; then
+        colorized_echo yellow "Removing infinity script"
+        rm "/usr/local/bin/infinity"
     fi
 }
 
-uninstall_marzban() {
+uninstall_infinity() {
     if [ -d "$APP_DIR" ]; then
         colorized_echo yellow "Removing directory: $APP_DIR"
         rm -r "$APP_DIR"
     fi
 }
 
-uninstall_marzban_docker_images() {
-    images=$(docker images | grep marzban | awk '{print $3}')
+uninstall_infinity_docker_images() {
+    images=$(docker images | grep infinity | awk '{print $3}')
     
     if [ -n "$images" ]; then
-        colorized_echo yellow "Removing Docker images of Marzban"
+        colorized_echo yellow "Removing Docker images of infinity"
         for image in $images; do
             if docker rmi "$image" >/dev/null 2>&1; then
                 colorized_echo yellow "Image $image removed"
@@ -179,47 +179,47 @@ uninstall_marzban_docker_images() {
     fi
 }
 
-uninstall_marzban_data_files() {
+uninstall_infinity_data_files() {
     if [ -d "$DATA_DIR" ]; then
         colorized_echo yellow "Removing directory: $DATA_DIR"
         rm -r "$DATA_DIR"
     fi
 }
 
-up_marzban() {
+up_infinity() {
     $COMPOSE -f $COMPOSE_FILE -p "$APP_NAME" up -d --remove-orphans
 }
 
-down_marzban() {
+down_infinity() {
     $COMPOSE -f $COMPOSE_FILE -p "$APP_NAME" down
 }
 
-show_marzban_logs() {
+show_infinity_logs() {
     $COMPOSE -f $COMPOSE_FILE -p "$APP_NAME" logs
 }
 
-follow_marzban_logs() {
+follow_infinity_logs() {
     $COMPOSE -f $COMPOSE_FILE -p "$APP_NAME" logs -f
 }
 
-marzban_cli() {
-    $COMPOSE -f $COMPOSE_FILE -p "$APP_NAME" exec -e CLI_PROG_NAME="marzban cli" marzban marzban-cli "$@"
+infinity_cli() {
+    $COMPOSE -f $COMPOSE_FILE -p "$APP_NAME" exec -e CLI_PROG_NAME="infinity cli" infinity infinity-cli "$@"
 }
 
 
-update_marzban_script() {
-    FETCH_REPO="Gozargah/Marzban-scripts"
-    SCRIPT_URL="https://github.com/$FETCH_REPO/raw/master/marzban.sh"
-    colorized_echo blue "Updating marzban script"
-    curl -sSL $SCRIPT_URL | install -m 755 /dev/stdin /usr/local/bin/marzban
-    colorized_echo green "marzban script updated successfully"
+update_infinity_script() {
+    FETCH_REPO="Niraj-Dilshan/infinity-script"
+    SCRIPT_URL="https://github.com/$FETCH_REPO/raw/master/infinity.sh"
+    colorized_echo blue "Updating infinity script"
+    curl -sSL $SCRIPT_URL | install -m 755 /dev/stdin /usr/local/bin/infinity
+    colorized_echo green "infinity script updated successfully"
 }
 
-update_marzban() {
+update_infinity() {
     $COMPOSE -f $COMPOSE_FILE -p "$APP_NAME" pull
 }
 
-is_marzban_installed() {
+is_infinity_installed() {
     if [ -d $APP_DIR ]; then
         return 0
     else
@@ -227,7 +227,7 @@ is_marzban_installed() {
     fi
 }
 
-is_marzban_up() {
+is_infinity_up() {
     if [ -z "$($COMPOSE -f $COMPOSE_FILE ps -q -a)" ]; then
         return 1
     else
@@ -237,9 +237,9 @@ is_marzban_up() {
 
 install_command() {
     check_running_as_root
-    # Check if marzban is already installed
-    if is_marzban_installed; then
-        colorized_echo red "Marzban is already installed at $APP_DIR"
+    # Check if infinity is already installed
+    if is_infinity_installed; then
+        colorized_echo red "infinity is already installed at $APP_DIR"
         read -p "Do you want to override the previous installation? (y/n) "
         if [[ ! $REPLY =~ ^[Yy]$ ]]; then
             colorized_echo red "Aborted installation"
@@ -257,46 +257,46 @@ install_command() {
         install_docker
     fi
     detect_compose
-    install_marzban_script
-    install_marzban
-    up_marzban
-    follow_marzban_logs
+    install_infinity_script
+    install_infinity
+    up_infinity
+    follow_infinity_logs
 }
 
 uninstall_command() {
     check_running_as_root
-    # Check if marzban is installed
-    if ! is_marzban_installed; then
-        colorized_echo red "Marzban's not installed!"
+    # Check if infinity is installed
+    if ! is_infinity_installed; then
+        colorized_echo red "Infinity's not installed!"
         exit 1
     fi
     
-    read -p "Do you really want to uninstall Marzban? (y/n) "
+    read -p "Do you really want to uninstall Infinity? (y/n) "
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
         colorized_echo red "Aborted"
         exit 1
     fi
     
     detect_compose
-    if is_marzban_up; then
-        down_marzban
+    if is_infinity_up; then
+        down_infinity
     fi
-    uninstall_marzban_script
-    uninstall_marzban
-    uninstall_marzban_docker_images
+    uninstall_infinity_script
+    uninstall_infinity
+    uninstall_infinity_docker_images
     
-    read -p "Do you want to remove Marzban's data files too ($DATA_DIR)? (y/n) "
+    read -p "Do you want to remove infinity's data files too ($DATA_DIR)? (y/n) "
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        colorized_echo green "Marzban uninstalled successfully"
+        colorized_echo green "infinity uninstalled successfully"
     else
-        uninstall_marzban_data_files
-        colorized_echo green "Marzban uninstalled successfully"
+        uninstall_infinity_data_files
+        colorized_echo green "infinity uninstalled successfully"
     fi
 }
 
 up_command() {
     help() {
-        colorized_echo red "Usage: marzban up [options]"
+        colorized_echo red "Usage: infinity up [options]"
         echo ""
         echo "OPTIONS:"
         echo "  -h, --help        display this help message"
@@ -322,46 +322,46 @@ up_command() {
         shift
     done
     
-    # Check if marzban is installed
-    if ! is_marzban_installed; then
-        colorized_echo red "Marzban's not installed!"
+    # Check if infinity is installed
+    if ! is_infinity_installed; then
+        colorized_echo red "infinity's not installed!"
         exit 1
     fi
     
     detect_compose
     
-    if is_marzban_up; then
-        colorized_echo red "Marzban's already up"
+    if is_infinity_up; then
+        colorized_echo red "infinity's already up"
         exit 1
     fi
     
-    up_marzban
+    up_infinity
     if [ "$no_logs" = false ]; then
-        follow_marzban_logs
+        follow_infinity_logs
     fi
 }
 
 down_command() {
     
-    # Check if marzban is installed
-    if ! is_marzban_installed; then
-        colorized_echo red "Marzban's not installed!"
+    # Check if infinity is installed
+    if ! is_infinity_installed; then
+        colorized_echo red "infinity's not installed!"
         exit 1
     fi
     
     detect_compose
     
-    if ! is_marzban_up; then
-        colorized_echo red "Marzban's already down"
+    if ! is_infinity_up; then
+        colorized_echo red "infinity's already down"
         exit 1
     fi
     
-    down_marzban
+    down_infinity
 }
 
 restart_command() {
     help() {
-        colorized_echo red "Usage: marzban restart [options]"
+        colorized_echo red "Usage: infinity restart [options]"
         echo
         echo "OPTIONS:"
         echo "  -h, --help        display this help message"
@@ -387,25 +387,25 @@ restart_command() {
         shift
     done
     
-    # Check if marzban is installed
-    if ! is_marzban_installed; then
-        colorized_echo red "Marzban's not installed!"
+    # Check if infinity is installed
+    if ! is_infinity_installed; then
+        colorized_echo red "infinity's not installed!"
         exit 1
     fi
     
     detect_compose
     
-    down_marzban
-    up_marzban
+    down_infinity
+    up_infinity
     if [ "$no_logs" = false ]; then
-        follow_marzban_logs
+        follow_infinity_logs
     fi
 }
 
 status_command() {
     
-    # Check if marzban is installed
-    if ! is_marzban_installed; then
+    # Check if infinity is installed
+    if ! is_infinity_installed; then
         echo -n "Status: "
         colorized_echo red "Not Installed"
         exit 1
@@ -413,7 +413,7 @@ status_command() {
     
     detect_compose
     
-    if ! is_marzban_up; then
+    if ! is_infinity_up; then
         echo -n "Status: "
         colorized_echo blue "Down"
         exit 1
@@ -440,7 +440,7 @@ status_command() {
 
 logs_command() {
     help() {
-        colorized_echo red "Usage: marzban logs [options]"
+        colorized_echo red "Usage: infinity logs [options]"
         echo ""
         echo "OPTIONS:"
         echo "  -h, --help        display this help message"
@@ -466,67 +466,67 @@ logs_command() {
         shift
     done
     
-    # Check if marzban is installed
-    if ! is_marzban_installed; then
-        colorized_echo red "Marzban's not installed!"
+    # Check if infinity is installed
+    if ! is_infinity_installed; then
+        colorized_echo red "infinity's not installed!"
         exit 1
     fi
     
     detect_compose
     
-    if ! is_marzban_up; then
-        colorized_echo red "Marzban is not up."
+    if ! is_infinity_up; then
+        colorized_echo red "infinity is not up."
         exit 1
     fi
     
     if [ "$no_follow" = true ]; then
-        show_marzban_logs
+        show_infinity_logs
     else
-        follow_marzban_logs
+        follow_infinity_logs
     fi
 }
 
 cli_command() {
-    # Check if marzban is installed
-    if ! is_marzban_installed; then
-        colorized_echo red "Marzban's not installed!"
+    # Check if infinity is installed
+    if ! is_infinity_installed; then
+        colorized_echo red "infinity's not installed!"
         exit 1
     fi
     
     detect_compose
     
-    if ! is_marzban_up; then
-        colorized_echo red "Marzban is not up."
+    if ! is_infinity_up; then
+        colorized_echo red "infinity is not up."
         exit 1
     fi
     
-    marzban_cli "$@"
+    infinity_cli "$@"
 }
 
 update_command() {
     check_running_as_root
-    # Check if marzban is installed
-    if ! is_marzban_installed; then
-        colorized_echo red "Marzban's not installed!"
+    # Check if infinity is installed
+    if ! is_infinity_installed; then
+        colorized_echo red "infinity's not installed!"
         exit 1
     fi
     
     detect_compose
     
-    update_marzban_script
+    update_infinity_script
     colorized_echo blue "Pulling latest version"
-    update_marzban
+    update_infinity
     
-    colorized_echo blue "Restarting Marzban's services"
-    down_marzban
-    up_marzban
+    colorized_echo blue "Restarting infinity's services"
+    down_infinity
+    up_infinity
     
-    colorized_echo blue "Marzban updated successfully"
+    colorized_echo blue "infinity updated successfully"
 }
 
 
 usage() {
-    colorized_echo red "Usage: marzban [command]"
+    colorized_echo red "Usage: infinity [command]"
     echo
     echo "Commands:"
     echo "  up          Start services"
@@ -534,10 +534,10 @@ usage() {
     echo "  restart     Restart services"
     echo "  status      Show status"
     echo "  logs        Show logs"
-    echo "  cli         Marzban CLI"
-    echo "  install     Install Marzban"
+    echo "  cli         infinity CLI"
+    echo "  install     Install infinity"
     echo "  update      Update latest version"
-    echo "  uninstall   Uninstall Marzban"
+    echo "  uninstall   Uninstall infinity"
     echo
 }
 
